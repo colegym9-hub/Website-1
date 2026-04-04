@@ -1,0 +1,178 @@
+.container {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: var(--ac-bg);
+}
+
+.cardsWrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card {
+  position: absolute;
+  top: 10vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1200px;
+  height: 80vh;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  will-change: transform;
+  perspective: 1000px;
+}
+
+.cardBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  z-index: 1;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  transform-style: preserve-3d;
+  max-width: 800px;
+}
+
+.title {
+  color: white;
+  font-size: 6rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  font-family: var(--font-display);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  /* 3D push forward */
+  transform: translateZ(1em);
+}
+
+.btnWrapper {
+  transform: translateZ(0.5em);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--ac-accent, #00d2ff);
+  color: #000;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 210, 255, 0.4);
+}
+
+.btnIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.btn:hover .btnIcon {
+  transform: translateX(4px);
+}
+
+.progressContainer {
+  position: absolute;
+  top: 0;
+  right: 40px;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.progressBar {
+  position: sticky;
+  top: 50vh;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.progressDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.progressDot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 6px;
+  height: 6px;
+  background-color: var(--ac-accent, #00d2ff);
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.progressDotActive {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.progressDotActive::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 3.5rem;
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/alter/Everything/**)",
+      "Bash(printf 'website-temp\\\\n')",
+      "Bash(npx shadcn@latest init --preset b0 --template next)",
+      "Bash(mv -f \"C:\\\\Users\\\\alter\\\\Everything\\\\website-temp\"/* \"C:\\\\Users\\\\alter\\\\Everything\\\\Website\"/)",
+      "Bash(mv -f \"C:\\\\Users\\\\alter\\\\Everything\\\\website-temp\"/.[!.]* \"C:\\\\Users\\\\alter\\\\Everything\\\\Website\"/)",
+      "Bash(rmdir \"C:\\\\Users\\\\alter\\\\Everything\\\\website-temp\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Skill(shadcn)",
+      "Skill(shadcn:*)",
+      "Bash(npm i:*)",
+      "Bash(node -e \"require\\(''three''\\); console.log\\(''three ok''\\)\")",
+      "Bash(node -e \"const m = require\\(''maath''\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(node -e \"const { easing } = require\\(''maath''\\); console.log\\(typeof easing.damp3, typeof easing.damp\\)\")",
+      "Bash(python3 -c \":*)"
+    ]
+  }
+}

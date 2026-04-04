@@ -1,0 +1,419 @@
+.section {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: var(--ac-bg);
+  padding: 100px 20px 80px 20px;
+  font-family: var(--font-body-typekit), var(--font-sans), system-ui, sans-serif;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.servicesHeader {
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  animation: titleFadeDown 1.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
+@keyframes titleFadeDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.servicesOverline {
+  color: var(--ac-accent);
+  letter-spacing: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-display);
+}
+
+.servicesTitle {
+  color: var(--ac-text);
+  font-size: 3.5rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.animatingPeriod {
+  color: var(--ac-accent);
+  animation: blinkPeriod 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes blinkPeriod {
+  0% {
+    opacity: 1;
+    text-shadow: 0 0 15px color-mix(in srgb, var(--ac-accent) 80%, transparent);
+  }
+  100% {
+    opacity: 0.2;
+    text-shadow: 0 0 0 transparent;
+  }
+}
+
+.arcWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 850px;
+  margin-top: 30px;
+  opacity: 0;
+  transform: scale(0.9);
+  animation: arcReveal 1.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards 0.3s;
+}
+
+@keyframes arcReveal {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.arcLine {
+  position: absolute;
+  top: 300px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1300px;
+  height: 1300px;
+  border-radius: 50%;
+  border-top: 2px dashed color-mix(in srgb, var(--ac-accent) 40%, transparent);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.centerIndicator {
+  position: absolute;
+  top: 720px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  background: color-mix(in srgb, var(--ac-accent) 40%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--ac-accent) 80%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ac-text) 50%, transparent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.5),
+    0 0 25px color-mix(in srgb, var(--ac-accent) 30%, transparent);
+  transition:
+    opacity 0.3s ease,
+    filter 0.3s ease;
+}
+
+.centerIndicator h3 {
+  color: var(--ac-text);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.3;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: var(--font-display);
+}
+
+.spinRing {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  border: 3px dotted color-mix(in srgb, var(--ac-accent) 80%, transparent);
+  border-radius: 50%;
+  animation: spinDots 20s linear infinite;
+}
+
+@keyframes spinDots {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.arcNode {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 2;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.nodeCenter {
+  top: 300px;
+  left: 50%;
+}
+.nodeLeft {
+  top: 480px;
+  left: 15%;
+}
+.nodeRight {
+  top: 480px;
+  left: 85%;
+}
+
+.nodeBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-size: cover;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.nodeOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--ac-bg) 50%, transparent);
+  transition: all 0.5s ease;
+  z-index: 2;
+}
+
+.nodeTitleResting {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--ac-text);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.9);
+  transition: opacity 0.3s ease;
+  z-index: 3;
+  pointer-events: none;
+  width: 100%;
+  font-family: var(--font-display);
+}
+
+.nodeContentExpanded {
+  position: absolute;
+  top: 275px;
+  left: 0;
+  width: 100%;
+  padding: 0 25px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition:
+    opacity 0.4s ease 0.1s,
+    transform 0.4s ease 0.1s,
+    visibility 0.4s;
+  pointer-events: none;
+  z-index: 3;
+  will-change: opacity, transform;
+  -webkit-transform: translateZ(0);
+}
+
+.arcNode:hover,
+.arcNode:focus-within {
+  width: 360px;
+  height: 560px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ac-accent) 55%, transparent) 0%,
+    color-mix(in srgb, var(--ac-accent) 15%, transparent) 100%
+  );
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid color-mix(in srgb, var(--ac-accent) 50%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ac-text) 40%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--ac-text) 20%, transparent);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px color-mix(in srgb, var(--ac-accent) 20%, transparent);
+  z-index: 10;
+  outline: none;
+}
+
+.arcNode:hover .nodeBg,
+.arcNode:focus-within .nodeBg {
+  top: 15px;
+  left: 15px;
+  width: calc(100% - 30px);
+  height: 250px;
+  border-radius: 12px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+}
+
+.arcNode:hover .nodeOverlay,
+.arcNode:focus-within .nodeOverlay {
+  background: rgba(0, 0, 0, 0);
+}
+
+.arcNode:hover .nodeTitleResting,
+.arcNode:focus-within .nodeTitleResting {
+  opacity: 0;
+}
+
+.arcNode:hover .nodeContentExpanded,
+.arcNode:focus-within .nodeContentExpanded {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.titleExpanded {
+  color: var(--ac-text);
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-family: var(--font-display);
+}
+
+.descExpanded {
+  color: var(--ac-text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 25px 0;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.btnExpanded {
+  display: inline-block;
+  padding: 12px 35px;
+  background-color: var(--ac-accent) !important;
+  color: var(--ac-bg) !important;
+  text-decoration: none;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  will-change: transform, background-color;
+  font-family: var(--font-display);
+}
+
+.btnExpanded:hover {
+  background-color: var(--ac-text) !important;
+  color: var(--ac-bg) !important;
+}
+
+@media (min-width: 769px) {
+  .arcWrapper:has(.arcNode:hover) .arcNode:not(:hover),
+  .arcWrapper:has(.arcNode:focus-within) .arcNode:not(:focus-within) {
+    filter: blur(8px) grayscale(50%);
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  .arcWrapper:has(.arcNode:hover) .centerIndicator,
+  .arcWrapper:has(.arcNode:focus-within) .centerIndicator {
+    filter: blur(8px);
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 1100px) {
+  .arcWrapper {
+    transform: scale(0.8);
+    margin-top: 0;
+    height: 650px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    width: 100%;
+    left: 0;
+    right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 60px 15px;
+    height: auto;
+  }
+  .servicesTitle {
+    font-size: 2.5rem;
+  }
+
+  .arcWrapper {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+    transform: none;
+    animation: none;
+    opacity: 1;
+  }
+
+  .arcLine,
+  .centerIndicator {
+    display: none;
+  }
+
+  .arcNode {
+    position: relative;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100%;
+    max-width: 360px;
+    height: 200px;
+    border-radius: 16px;
+  }
+
+  .nodeTitleResting {
+    font-size: 1.6rem;
+  }
+  .arcNode .nodeTitleResting br {
+    display: none;
+  }
+
+  .arcNode:hover,
+  .arcNode:focus-within,
+  .arcNode:active {
+    width: 100%;
+    height: 560px;
+  }
+}

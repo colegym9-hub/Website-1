@@ -1,0 +1,101 @@
+.container {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: var(--ac-bg);
+}
+
+.cardsWrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card {
+  position: absolute;
+  top: 10vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: calc(100% - 2rem);
+  max-width: 80rem; /* 1280px */
+  height: 80vh;
+  border-radius: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  will-change: transform;
+  perspective: 1000px;
+}
+
+@media (min-width: 768px) {
+  .card {
+    width: calc(100% - 4rem);
+  }
+}
+
+/* Dots Navigation */
+.progressContainer {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@media (min-width: 768px) {
+  .progressContainer {
+    right: 40px;
+  }
+}
+
+.progressBar {
+  position: sticky;
+  top: 50vh;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.progressDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0;
+}
+
+.progressDot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 6px;
+  height: 6px;
+  background-color: var(--ac-accent, #00d2ff);
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.progressDotActive {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.progressDotActive::after {
+  transform: translate(-50%, -50%) scale(1);
+}
