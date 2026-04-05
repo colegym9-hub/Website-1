@@ -16,7 +16,19 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin"
 
 const PREVIEW_LEAD_ID = "00000000-0000-4000-8000-000000000001"
 
+export const maxDuration = 30
+
 export async function GET() {
+  try {
+    return await handleGet()
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error("[catalog] unhandled error:", msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
+  }
+}
+
+async function handleGet() {
   const user = await getAdminUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
@@ -28,10 +40,15 @@ export async function GET() {
 
   // Single bulk fetch instead of one query per template
   const services = [...new Set(entries.map(e => e.service))]
-  const { data: allDbRows } = await admin
+  const { data: allDbRows, error: dbError } = await admin
     .from("email_templates")
     .select("id, service, template_key, subject, body_html, body_plain, active")
     .in("service", services)
+
+  if (dbError) {
+    console.error("[catalog] db error:", dbError.message)
+    return NextResponse.json({ error: `DB error: ${dbError.message}` }, { status: 500 })
+  }
 
   const rowMap = new Map(
     (allDbRows ?? []).map(r => [`${r.service}::${r.template_key}`, r]),
@@ -111,3 +128,4 @@ export async function GET() {
 
   return NextResponse.json({ items })
 }
+
