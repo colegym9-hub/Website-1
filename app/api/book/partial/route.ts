@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { Resend } from "resend"
-import { EMAIL_FROM, EMAIL_REPLY_TO } from "@/lib/email-config"
+import { EMAIL_FROM } from "@/lib/email-config"
 import { createSupabaseAdmin } from "@/lib/supabase-admin"
 
 /** Saves partial lead data when contact info is captured, before the funnel is finished. */

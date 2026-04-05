@@ -1,44 +1,31 @@
-import { addDays } from "date-fns"
 import type { LeadTier } from "@/lib/lead-score"
 
-/** nurture_step: next cron email index to send (1, 2, 3). 0 = no cron pending. */
+/** nurture_step: next manual nurture email index to send (1, 2, 3). 0 = none pending. */
 export type NurtureCronState = {
   nurture_step: number
   next_nurture_at: string | null
 }
 
-function atRoughMorningEt(base: Date, dayOffset: number): Date {
-  const d = addDays(base, dayOffset)
-  d.setUTCHours(15, 30, 0, 0)
-  return d
-}
-
-/** After POST /api/book day-0 send, set cron queue from tier + service. */
+/** After POST /api/book day-0 send: next nurture email is manual from admin (no scheduled next_nurture_at). */
 export function initialNurtureCronState(args: {
   submittedAt: Date
   tier: LeadTier
 }): NurtureCronState {
-  const { submittedAt, tier } = args
+  const { tier } = args
   if (tier === "hot") {
-    return {
-      nurture_step: 3,
-      next_nurture_at: atRoughMorningEt(submittedAt, 10).toISOString(),
-    }
+    return { nurture_step: 3, next_nurture_at: null }
   }
-  return {
-    nurture_step: 1,
-    next_nurture_at: atRoughMorningEt(submittedAt, 2).toISOString(),
-  }
+  return { nurture_step: 1, next_nurture_at: null }
 }
 
-/** After cron sends a nurture email, advance step and next send time. */
+/** After admin sends a nurture email: advance step; no scheduled follow-up time. */
 export function advanceAfterNurtureSend(args: {
   tier: LeadTier
   currentStep: number
   submittedAt: Date
   sentAt: Date
 }): NurtureCronState {
-  const { tier, currentStep, submittedAt, sentAt } = args
+  const { tier, currentStep } = args
   if (tier === "hot") {
     return { nurture_step: 0, next_nurture_at: null }
   }
@@ -46,16 +33,10 @@ export function advanceAfterNurtureSend(args: {
     return { nurture_step: 0, next_nurture_at: null }
   }
   if (currentStep === 1) {
-    const target = atRoughMorningEt(submittedAt, 5)
-    const next = target > sentAt ? target : addDays(sentAt, 3)
-    next.setUTCHours(15, 30, 0, 0)
-    return { nurture_step: 2, next_nurture_at: next.toISOString() }
+    return { nurture_step: 2, next_nurture_at: null }
   }
   if (currentStep === 2) {
-    const target = atRoughMorningEt(submittedAt, 10)
-    const next = target > sentAt ? target : addDays(sentAt, 4)
-    next.setUTCHours(15, 30, 0, 0)
-    return { nurture_step: 3, next_nurture_at: next.toISOString() }
+    return { nurture_step: 3, next_nurture_at: null }
   }
   return { nurture_step: 0, next_nurture_at: null }
 }

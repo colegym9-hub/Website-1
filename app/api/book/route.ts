@@ -165,7 +165,14 @@ function row(label: string, value: string | number | undefined) {
   </tr>`
 }
 
-function coleEmailHtml(d: ReturnType<typeof normalizeBooking>, score: number, tier: LeadTier, cta: CtaVariant) {
+function coleEmailHtml(
+  d: ReturnType<typeof normalizeBooking>,
+  score: number,
+  tier: LeadTier,
+  cta: CtaVariant,
+  leadId: string | null,
+) {
+  const adminLeadUrl = leadId ? `${siteBase()}/admin/leads/${leadId}` : ""
   return `
       <div style="font-family:sans-serif;max-width:600px;color:#111;">
         <h2 style="margin:0 0 24px;">New Booking Inquiry</h2>
@@ -174,6 +181,7 @@ function coleEmailHtml(d: ReturnType<typeof normalizeBooking>, score: number, ti
           ${row("Lead tier", tier)}
           ${row("CTA variant", cta)}
           ${row("Readiness", d.readiness)}
+          ${leadId ? row("Admin", `<a href="${adminLeadUrl}" style="color:#0d9488;">Open lead in admin</a>`) : ""}
           ${row("Name", d.name)}
           ${row("Email", `<a href="mailto:${d.email}">${d.email}</a>`)}
           ${row("Phone", d.phone)}
@@ -331,10 +339,13 @@ export async function POST(req: NextRequest) {
       clientHtml = `<p>Hi ${d.name},</p><p>Thank you — we received your inquiry for ${svc}.</p>`
     }
 
-    const emailHtml = coleEmailHtml(d, score, tier, ctaVariant)
+    const emailHtml = coleEmailHtml(d, score, tier, ctaVariant, leadId)
     const unsubHeader = leadId
       ? `<${siteBase()}/api/unsub?k=${encodeURIComponent(signEngageToken({ leadId, kind: "unsub" }))}>`
       : undefined
+
+    let clientEmailSent = false
+    let clientEmailError: string | null = null
 
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY)
@@ -364,10 +375,15 @@ export async function POST(req: NextRequest) {
         headers: Object.keys(clientHeaders).length ? clientHeaders : undefined,
         tags: leadId ? [{ name: "lead_id", value: leadId }] : undefined,
       })
-      if (clientResult.error) console.error("Resend client email error:", clientResult.error)
-      else console.log("Client email sent:", clientResult.data?.id)
+      clientEmailSent = !clientResult.error
+      if (clientResult.error) {
+        clientEmailError = String(clientResult.error.message || clientResult.error)
+        console.error("Resend client email error:", clientResult.error)
+      } else {
+        console.log("Client email sent:", clientResult.data?.id)
+      }
 
-      if (admin && leadId) {
+      if (admin && leadId && clientEmailSent) {
         await insertLeadEvent(admin, leadId, "email.sent", {
           template: usedKey || "day0",
           to: d.email,
@@ -385,6 +401,8 @@ export async function POST(req: NextRequest) {
       leadTier: tier,
       leadId: leadId ?? "",
       magnetToken: ctaVariant === "warm_up" ? magnetToken : "",
+      clientEmailSent,
+      ...(process.env.BOOKING_DEBUG === "1" && clientEmailError ? { clientEmailError } : {}),
     })
   } catch (err) {
     console.error("Booking API error:", err)

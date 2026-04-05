@@ -19,7 +19,8 @@ const postSchema = z.object({
   service: z.string().min(1),
   template_key: z.string().min(1),
   subject: z.string(),
-  body_html: z.string(),
+  body_html: z.string().optional().default(""),
+  body_plain: z.string().optional().default(""),
   active: z.boolean().optional(),
 })
 
@@ -36,7 +37,8 @@ export async function POST(req: NextRequest) {
       service: body.service,
       template_key: body.template_key,
       subject: body.subject,
-      body_html: sanitizeTemplateHtml(body.body_html),
+      body_plain: body.body_plain,
+      body_html: body.body_html?.trim() ? sanitizeTemplateHtml(body.body_html) : "",
       active: body.active ?? true,
       updated_at: new Date().toISOString(),
     })

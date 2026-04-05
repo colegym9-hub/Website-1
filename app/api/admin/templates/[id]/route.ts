@@ -8,6 +8,7 @@ const patchSchema = z
   .object({
     subject: z.string().optional(),
     body_html: z.string().optional(),
+    body_plain: z.string().optional(),
     active: z.boolean().optional(),
   })
   .strict()
@@ -23,6 +24,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() }
   if (body.subject !== undefined) update.subject = body.subject
   if (body.body_html !== undefined) update.body_html = sanitizeTemplateHtml(body.body_html)
+  if (body.body_plain !== undefined) update.body_plain = body.body_plain
   if (body.active !== undefined) update.active = body.active
 
   const { error } = await admin.from("email_templates").update(update).eq("id", id)

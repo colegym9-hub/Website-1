@@ -1,12 +1,9 @@
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import Nav from "@/components/nav"
 import PageLoader from "@/components/page-loader"
 import BackgroundEffects from "@/components/background-effects"
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata = {
   title: "A.C Media - Athlete Photography",
@@ -20,10 +17,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={cn("dark antialiased", inter.variable)}>
+    <html lang="en" className={cn("dark antialiased")}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" />
         <link rel="stylesheet" href="https://use.typekit.net/xjl1yqv.css" />
       </head>

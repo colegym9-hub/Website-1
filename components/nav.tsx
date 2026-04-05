@@ -16,8 +16,9 @@ const links = [
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
+  const [openForPath, setOpenForPath] = useState<string | null>(null)
   const pathname = usePathname()
+  const open = openForPath === pathname
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -25,10 +26,10 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  useEffect(() => { setOpen(false) }, [pathname])
-
   // Hide entirely on the booking flow — it has its own header
   if (pathname.startsWith("/book")) return null
+  // Admin uses its own shell (Networking Hub–style); no marketing nav
+  if (pathname.startsWith("/admin")) return null
 
   return (
     <>
@@ -57,7 +58,7 @@ export default function Nav() {
           </Button>
 
           <button
-            onClick={() => setOpen((o) => !o)}
+            onClick={() => setOpenForPath(open ? null : pathname)}
             aria-label={open ? "Close menu" : "Open menu"}
             className="flex flex-col gap-[5px] p-1 cursor-pointer"
           >
@@ -81,7 +82,7 @@ export default function Nav() {
       </header>
 
       {/* Right drawer */}
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={(nextOpen) => setOpenForPath(nextOpen ? pathname : null)}>
         <SheetContent
           side="right"
           showCloseButton={false}
@@ -96,7 +97,7 @@ export default function Nav() {
           {/* Close */}
           <div className="flex justify-end">
             <button
-              onClick={() => setOpen(false)}
+              onClick={() => setOpenForPath(null)}
               className="text-[var(--ac-text-muted)] hover:text-[var(--ac-text)] transition-colors text-xs tracking-widest uppercase"
             >
               Close

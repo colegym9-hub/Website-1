@@ -1,58 +1,59 @@
-import Link from "next/link"
 import { requireAdminUser } from "@/lib/admin-auth"
+import { AdminHubPageHeader } from "@/components/admin/admin-hub-page-header"
+import { AdminLeadsDashboard, type LeadTableRow } from "@/components/admin/admin-leads-dashboard"
+import { AdminSchemaBanner } from "@/components/admin/admin-schema-banner"
+import { getAdminHubStats } from "@/lib/admin-hub-stats"
 import { createSupabaseAdmin } from "@/lib/supabase-admin"
+
+const FULL_SELECT =
+  "id,created_at,name,email,service,lead_tier,lead_stage,nurture_step,next_nurture_at,unsubscribed_at"
+const FALLBACK_SELECT = "id,created_at,name,email,service,lead_tier,lead_stage,unsubscribed_at"
 
 export default async function AdminLeadsPage() {
   await requireAdminUser()
   const admin = createSupabaseAdmin()
-  if (!admin) return <p className="text-red-400">Supabase admin not configured.</p>
+  if (!admin) {
+    return <p className="text-red-400">Supabase admin not configured.</p>
+  }
 
-  const { data: leads, error } = await admin
-    .from("leads")
-    .select(
-      "id,created_at,name,email,service,lead_tier,lead_stage,nurture_step,next_nurture_at,unsubscribed_at",
-    )
-    .order("created_at", { ascending: false })
-    .limit(200)
+  let schemaPartial = false
+  let queryError: string | null = null
 
-  if (error) return <p className="text-red-400">{error.message}</p>
+  const primary = await admin.from("leads").select(FULL_SELECT).order("created_at", { ascending: false }).limit(200)
+
+  let leads: LeadTableRow[] = []
+
+  if (primary.error && primary.error.message.includes("nurture_step")) {
+    schemaPartial = true
+    const fb = await admin.from("leads").select(FALLBACK_SELECT).order("created_at", { ascending: false }).limit(200)
+    if (fb.error) queryError = fb.error.message
+    else leads = (fb.data ?? []) as LeadTableRow[]
+  } else if (primary.error) {
+    queryError = primary.error.message
+  } else {
+    leads = (primary.data ?? []) as LeadTableRow[]
+  }
+
+  const stats = await getAdminHubStats(admin)
 
   return (
     <div>
-      <h1 className="font-heading text-2xl text-white mb-2">Leads</h1>
-      <p className="text-[#666] text-sm mb-8">Recent inquiries (newest first).</p>
-      <div className="border border-[#2a2a2a] rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-[#141414] text-[#888] text-left">
-            <tr>
-              <th className="p-3 font-medium">When</th>
-              <th className="p-3 font-medium">Name</th>
-              <th className="p-3 font-medium">Email</th>
-              <th className="p-3 font-medium">Service</th>
-              <th className="p-3 font-medium">Tier</th>
-              <th className="p-3 font-medium">Stage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(leads ?? []).map(row => (
-              <tr key={row.id} className="border-t border-[#222] hover:bg-[#151515]">
-                <td className="p-3 text-[#888] whitespace-nowrap">
-                  {row.created_at ? new Date(row.created_at).toLocaleString() : "—"}
-                </td>
-                <td className="p-3">
-                  <Link href={`/admin/leads/${row.id}`} className="text-[var(--ac-accent)] hover:underline">
-                    {row.name}
-                  </Link>
-                </td>
-                <td className="p-3 text-[#ccc] max-w-[200px] truncate">{row.email}</td>
-                <td className="p-3 text-[#aaa]">{row.service || "—"}</td>
-                <td className="p-3 text-[#aaa]">{row.lead_tier || "—"}</td>
-                <td className="p-3 text-[#aaa]">{row.lead_stage || "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <AdminHubPageHeader
+        title="Leads"
+        subtitle="Track inquiries through your funnel — open a row for lifecycle controls, events, and tests."
+      />
+
+      {queryError ? (
+        <p className="mb-6 text-sm text-red-400">{queryError}</p>
+      ) : schemaPartial ? (
+        <div className="mb-6">
+          <AdminSchemaBanner message="column leads.nurture_step does not exist" />
+        </div>
+      ) : null}
+
+      {!queryError ? (
+        <AdminLeadsDashboard leads={leads} stats={stats} schemaPartial={schemaPartial} />
+      ) : null}
     </div>
   )
 }

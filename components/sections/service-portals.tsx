@@ -126,30 +126,36 @@ function PortalFrame({
   onClick: () => void
 }) {
   const texture = useTexture(frame.img)
+  const displayTexture = useMemo(() => {
+    const nextTexture = texture.clone()
+    const img = texture.image as { width?: number; height?: number } | undefined
+    if (!img?.width || !img?.height) return nextTexture
+
+    const imgAspect = img.width / img.height
+    const frameAspect = FRAME_W / FRAME_H
+
+    if (imgAspect > frameAspect) {
+      const scale = frameAspect / imgAspect
+      nextTexture.repeat.set(scale, 1)
+      nextTexture.offset.set((1 - scale) / 2, 0)
+    } else {
+      const scale = imgAspect / frameAspect
+      nextTexture.repeat.set(1, scale)
+      nextTexture.offset.set(0, (1 - scale) / 2)
+    }
+
+    nextTexture.needsUpdate = true
+    return nextTexture
+  }, [texture])
   const [hovered, setHovered] = useState(false)
   const glowRef = useRef<THREE.Mesh>(null!)
   const glassTopRef = useRef<THREE.Mesh>(null!)
 
-  // Fix texture distortion — "cover" fitting so image fills frame without stretch
-  useMemo(() => {
-    const img = texture.image as { width?: number; height?: number } | undefined
-    if (!img?.width || !img?.height) return
-    const imgAspect = img.width / img.height
-    const frameAspect = FRAME_W / FRAME_H // portrait ≈ 0.629
-
-    if (imgAspect > frameAspect) {
-      // Landscape image in portrait frame → crop width (show center)
-      const scale = frameAspect / imgAspect
-      texture.repeat.set(scale, 1)
-      texture.offset.set((1 - scale) / 2, 0)
-    } else {
-      // Tall image in portrait frame → crop height (show top/center)
-      const scale = imgAspect / frameAspect
-      texture.repeat.set(1, scale)
-      texture.offset.set(0, (1 - scale) / 2)
+  useEffect(() => {
+    return () => {
+      displayTexture.dispose()
     }
-    texture.needsUpdate = true
-  }, [texture])
+  }, [displayTexture])
 
   useFrame((_, delta) => {
     // Teal glow pulses on hover
@@ -207,7 +213,7 @@ function PortalFrame({
       {/* ── Layer 3: Photo (rounded, cover-fitted) ── */}
       <mesh>
         <roundedPlaneGeometry args={[FRAME_W, FRAME_H, CORNER_R]} />
-        <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
+        <meshBasicMaterial map={displayTexture} side={THREE.DoubleSide} />
       </mesh>
 
       {/* ── Layer 4: Bottom gradient for label legibility ── */}
@@ -257,10 +263,14 @@ function Particles({ count = 320 }: { count?: number }) {
 
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3)
+    const randomAt = (seed: number) => {
+      const x = Math.sin(seed * 12.9898) * 43758.5453
+      return x - Math.floor(x)
+    }
     for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 44
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 22
-      arr[i * 3 + 2] = Math.random() * -52 + 13
+      arr[i * 3] = (randomAt(i * 3 + 1) - 0.5) * 44
+      arr[i * 3 + 1] = (randomAt(i * 3 + 2) - 0.5) * 22
+      arr[i * 3 + 2] = randomAt(i * 3 + 3) * -52 + 13
     }
     return arr
   }, [count])
@@ -298,8 +308,12 @@ function CameraRig({
 
   useFrame((state, delta) => {
     const p = progressRef.current
-    let tx = 0, ty = 0, tz = 0
-    let lx = 0, ly = 0, lz = 0
+    const tx = 0
+    let ty = 0
+    let tz = 0
+    const lx = 0
+    let ly = 0
+    let lz = 0
 
     if (p < 0.55) {
       const t = p / 0.55

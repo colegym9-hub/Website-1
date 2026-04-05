@@ -1,6 +1,6 @@
 "use client"
 
-import { Children, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react"
+import { Children, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react"
 import gsap from "gsap"
 import ScrollTrigger from "gsap/ScrollTrigger"
 import styles from "./about-scroll-stack.module.css"
@@ -11,15 +11,15 @@ if (typeof window !== "undefined") {
 }
 
 function usePrefersReducedMotion() {
-  const [r, setR] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setR(mq.matches)
-    const fn = () => setR(mq.matches)
-    mq.addEventListener("change", fn)
-    return () => mq.removeEventListener("change", fn)
-  }, [])
-  return r
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+      mq.addEventListener("change", onStoreChange)
+      return () => mq.removeEventListener("change", onStoreChange)
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  )
 }
 
 /**
@@ -32,10 +32,12 @@ export function AboutScrollStack({ children }: { children: ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
   const [activeSlide, setActiveSlide] = useState(0)
-  
+
   const reduced = usePrefersReducedMotion()
-  // Default true to avoid SSR mismatch — flips on first client paint
-  const [isMobile, setIsMobile] = useState(true)
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return true
+    return window.innerWidth < 768
+  })
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -46,14 +48,14 @@ export function AboutScrollStack({ children }: { children: ReactNode }) {
 
   useLayoutEffect(() => {
     if (isMobile || reduced || slides.length < 2) return
-    
+
     const ctx = gsap.context(() => {
       const cards = cardsRef.current.filter(Boolean)
       if (cards.length !== slides.length) return
 
-      const totalScrollHeight = window.innerHeight * slides.length;
-      const lastEndTime = (slides.length - 2) * 1.4 + 1.2;
-      const timelineDuration = lastEndTime + 0.6;
+      const totalScrollHeight = window.innerHeight * slides.length
+      const lastEndTime = (slides.length - 2) * 1.4 + 1.2
+      const timelineDuration = lastEndTime + 0.6
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -63,47 +65,47 @@ export function AboutScrollStack({ children }: { children: ReactNode }) {
           pin: true,
           scrub: 1,
           onUpdate: (self) => {
-            const p = self.progress;
-            const timelineTime = p * timelineDuration;
-            
-            let current = 0;
+            const p = self.progress
+            const timelineTime = p * timelineDuration
+
+            let current = 0
             for (let i = 1; i < slides.length; i++) {
-              const midpoint = (i - 1) * 1.4 + 0.8;
+              const midpoint = (i - 1) * 1.4 + 0.8
               if (timelineTime >= midpoint) {
-                current = i;
+                current = i
               }
             }
-            setActiveSlide(current);
-          }
-        }
-      });
+            setActiveSlide(current)
+          },
+        },
+      })
 
       // Set initial positions: all cards except the first are below screen
       cards.forEach((card, index) => {
         if (index > 0) {
-          gsap.set(card, { y: window.innerHeight });
+          gsap.set(card, { y: window.innerHeight })
         }
-      });
+      })
 
       for (let i = 1; i < slides.length; i++) {
-        const startTime = (i - 1) * 1.4 + 0.4;
-        
-        tl.fromTo(cards[i], 
-          { y: window.innerHeight }, 
-          { y: 0, ease: "power1.inOut", duration: 0.8 }, 
+        const startTime = (i - 1) * 1.4 + 0.4
+
+        tl.fromTo(cards[i],
+          { y: window.innerHeight },
+          { y: 0, ease: "power1.inOut", duration: 0.8 },
           startTime
-        );
-        tl.to(cards[i - 1], 
-          { scale: 0.9, opacity: 0, ease: "power1.inOut", duration: 0.8 }, 
+        )
+        tl.to(cards[i - 1],
+          { scale: 0.9, opacity: 0, ease: "power1.inOut", duration: 0.8 },
           startTime
-        );
+        )
       }
 
-      tl.to({}, { duration: 0.6 }, lastEndTime);
+      tl.to({}, { duration: 0.6 }, lastEndTime)
 
-    }, containerRef);
+    }, containerRef)
 
-    return () => ctx.revert();
+    return () => ctx.revert()
   }, [isMobile, reduced, slides.length]);
 
   // Mobile / reduced motion: plain stacked cards
