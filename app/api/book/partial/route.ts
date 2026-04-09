@@ -9,6 +9,7 @@ const partialSchema = z
   .object({
     name: z.string().min(1),
     email: z.string().email(),
+    partialLeadId: z.string().optional().default(""),
     phone: z.string().optional().default(""),
     org: z.string().optional().default(""),
     role: z.string().optional().default(""),
@@ -23,6 +24,13 @@ const partialSchema = z
     readiness: z.string().optional().default(""),
   })
   .passthrough()
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function isUuid(s: string) {
+  return UUID_RE.test(s.trim())
+}
 
 function partialColeHtml(data: z.infer<typeof partialSchema>) {
   const role = data.role ? `<tr><td style="padding:8px 0;color:#666;">Role</td><td><strong>${data.role}</strong></td></tr>` : ""
@@ -52,45 +60,83 @@ export async function POST(req: NextRequest) {
     const admin = createSupabaseAdmin()
     if (!admin) return NextResponse.json({ ok: false })
 
-    const { data: inserted, error } = await admin
-      .from("leads")
-      .insert({
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        org: data.org,
-        service: data.service,
-        location: data.location,
-        timeline: data.timeline + (data.timelineNote ? ` (${data.timelineNote})` : ""),
-        detail_sport_program: data.sport || (data.sports?.join(", ") ?? ""),
-        detail_session_style: data.sessionType,
-        team_size: data.rosterSize ?? null,
-        readiness: data.readiness || null,
-        raw_payload: body,
-        lead_stage: "contact_captured",
-      })
-      .select("id")
-      .single()
-
-    if (error) {
-      console.error("partial lead insert error", error)
-      return NextResponse.json({ ok: false })
+    const leadPayload = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      org: data.org,
+      service: data.service,
+      location: data.location,
+      timeline: data.timeline + (data.timelineNote ? ` (${data.timelineNote})` : ""),
+      detail_sport_program: data.sport || (data.sports?.join(", ") ?? ""),
+      detail_session_style: data.sessionType,
+      team_size: data.rosterSize ?? null,
+      readiness: data.readiness || null,
+      raw_payload: body,
+      lead_stage: "contact_captured",
     }
 
-    const leadId = inserted?.id ?? ""
+    let leadId = ""
+    let createdNewLead = false
 
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    const { count, error: cntErr } = await admin
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .eq("email", data.email)
-      .gte("created_at", since)
+    const existingId = data.partialLeadId.trim()
+    if (existingId && isUuid(existingId)) {
+      const { data: updated, error } = await admin
+        .from("leads")
+        .update(leadPayload)
+        .eq("id", existingId)
+        .select("id")
+        .maybeSingle()
+      if (error) {
+        console.error("partial lead update error", error)
+        return NextResponse.json({ ok: false })
+      }
+      leadId = updated?.id ?? ""
+    }
 
-    if (cntErr) console.error("partial dedupe count", cntErr)
+    if (!leadId) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      const { data: recentExisting, error: findError } = await admin
+        .from("leads")
+        .select("id")
+        .eq("email", data.email)
+        .eq("service", data.service)
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-    const shouldNotify = (count ?? 0) <= 1
+      if (findError) {
+        console.error("partial lead lookup error", findError)
+        return NextResponse.json({ ok: false })
+      }
 
-    if (shouldNotify && process.env.RESEND_API_KEY) {
+      if (recentExisting?.id) {
+        const { data: updated, error } = await admin
+          .from("leads")
+          .update(leadPayload)
+          .eq("id", recentExisting.id)
+          .select("id")
+          .maybeSingle()
+        if (error) {
+          console.error("partial lead update error", error)
+          return NextResponse.json({ ok: false })
+        }
+        leadId = updated?.id ?? ""
+      }
+    }
+
+    if (!leadId) {
+      const { data: inserted, error } = await admin.from("leads").insert(leadPayload).select("id").single()
+      if (error) {
+        console.error("partial lead insert error", error)
+        return NextResponse.json({ ok: false })
+      }
+      leadId = inserted?.id ?? ""
+      createdNewLead = Boolean(leadId)
+    }
+
+    if (createdNewLead && process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY)
       const r = await resend.emails.send({
         from: EMAIL_FROM,

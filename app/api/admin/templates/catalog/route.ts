@@ -62,6 +62,7 @@ async function handleGet() {
     const rawPlain = String(dbRow?.body_plain ?? "")
     const rawHtml = String(dbRow?.body_html ?? "")
     const rawSubject = String(dbRow?.subject ?? "")
+    const hasDbRow = Boolean(dbRow)
     const hasDbBody = Boolean(rawPlain.trim() || rawHtml.trim())
     const hasDbOverride = hasDbBody && dbRow?.active !== false
 
@@ -122,7 +123,7 @@ async function handleGet() {
       suggestedRawHtml,
       previewSubject,
       previewHtml,
-      source: hasDbOverride ? ("db" as const) : ("repo" as const),
+      source: hasDbRow ? ("db" as const) : ("repo" as const),
     }
   })
 

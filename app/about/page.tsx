@@ -1,4 +1,5 @@
 import AboutClient from "@/components/about/about-client"
+import { SiteShell } from "@/components/site-shell"
 
 export const metadata = {
   title: "About - A.C Media",
@@ -7,5 +8,9 @@ export const metadata = {
 }
 
 export default function AboutPage() {
-  return <AboutClient />
+  return (
+    <SiteShell>
+      <AboutClient />
+    </SiteShell>
+  )
 }

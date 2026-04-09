@@ -90,6 +90,8 @@ export function FollowUpsQueue() {
   const [newKeyOpen, setNewKeyOpen] = useState(false)
   const [newTemplateKey, setNewTemplateKey] = useState("")
   const openedFromQuery = useRef<string>("")
+  const previewFetchController = useRef<AbortController | null>(null)
+  const previewDraftRequestSeq = useRef(0)
 
   const loadNurture = useCallback(async () => {
     const r = await fetch("/api/admin/nurture-due")
@@ -125,10 +127,15 @@ export function FollowUpsQueue() {
 
   useEffect(() => {
     if (!modalOpen || !activeLeadId || previewLoading) return
+    const requestSeq = ++previewDraftRequestSeq.current
+    const controller = new AbortController()
     const t = setTimeout(() => {
+      previewFetchController.current?.abort()
+      previewFetchController.current = controller
       void fetch(`/api/admin/leads/${activeLeadId}/email-draft-preview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           subjectPlain,
           bodyPlain,
@@ -139,6 +146,7 @@ export function FollowUpsQueue() {
         .then(async r => {
           const j = await r.json().catch(() => ({}))
           if (!r.ok) return
+          if (controller.signal.aborted || requestSeq !== previewDraftRequestSeq.current) return
           if (typeof j.subject === "string" && typeof j.html === "string") {
             setMergedSubject(j.subject)
             setMergedHtml(j.html)
@@ -146,7 +154,13 @@ export function FollowUpsQueue() {
         })
         .catch(() => {})
     }, 450)
-    return () => clearTimeout(t)
+    return () => {
+      clearTimeout(t)
+      controller.abort()
+      if (previewFetchController.current === controller) {
+        previewFetchController.current = null
+      }
+    }
   }, [
     subjectPlain,
     bodyPlain,
@@ -160,10 +174,13 @@ export function FollowUpsQueue() {
   function refetchNurturePreview(leadId: string, tk?: string) {
     setPreviewLoading(true)
     setActionMsg(null)
+    previewFetchController.current?.abort()
+    const controller = new AbortController()
+    previewFetchController.current = controller
     const path = tk
       ? `/api/admin/nurture-due/${leadId}/preview?templateKey=${encodeURIComponent(tk)}`
       : `/api/admin/nurture-due/${leadId}/preview`
-    void fetch(path)
+    void fetch(path, { signal: controller.signal })
       .then(async r => {
         const j = await r.json().catch(() => ({}))
         if (!r.ok) throw new Error(j.error || "Preview failed")
@@ -176,8 +193,16 @@ export function FollowUpsQueue() {
         setNurtureTemplateKey(p.templateKey)
         setNurtureTemplateOptions(p.templateOptions ?? [])
       })
-      .catch(e => setActionMsg(e instanceof Error ? e.message : "Preview failed"))
-      .finally(() => setPreviewLoading(false))
+      .catch(e => {
+        if (controller.signal.aborted) return
+        setActionMsg(e instanceof Error ? e.message : "Preview failed")
+      })
+      .finally(() => {
+        if (previewFetchController.current === controller) {
+          previewFetchController.current = null
+        }
+        if (!controller.signal.aborted) setPreviewLoading(false)
+      })
   }
 
   function openNurtureModal(leadId: string) {
@@ -196,7 +221,10 @@ export function FollowUpsQueue() {
     setPreviewRecycle(null)
     setModalOpen(true)
     setPreviewLoading(true)
-    void fetch(`/api/admin/recycle-due/${leadId}/preview`)
+    previewFetchController.current?.abort()
+    const controller = new AbortController()
+    previewFetchController.current = controller
+    void fetch(`/api/admin/recycle-due/${leadId}/preview`, { signal: controller.signal })
       .then(async r => {
         const j = await r.json().catch(() => ({}))
         if (!r.ok) throw new Error(j.error || "Preview failed")
@@ -207,9 +235,23 @@ export function FollowUpsQueue() {
         setMergedSubject(p.subject)
         setMergedHtml(p.html)
       })
-      .catch(e => setActionMsg(e instanceof Error ? e.message : "Preview failed"))
-      .finally(() => setPreviewLoading(false))
+      .catch(e => {
+        if (controller.signal.aborted) return
+        setActionMsg(e instanceof Error ? e.message : "Preview failed")
+      })
+      .finally(() => {
+        if (previewFetchController.current === controller) {
+          previewFetchController.current = null
+        }
+        if (!controller.signal.aborted) setPreviewLoading(false)
+      })
   }
+
+  useEffect(() => {
+    if (modalOpen) return
+    previewFetchController.current?.abort()
+    previewFetchController.current = null
+  }, [modalOpen])
 
   useEffect(() => {
     const lead = searchParams.get("lead")

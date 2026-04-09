@@ -1,9 +1,5 @@
 import "./globals.css"
 import { cn } from "@/lib/utils"
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
-import Nav from "@/components/nav"
-import PageLoader from "@/components/page-loader"
-import BackgroundEffects from "@/components/background-effects"
 
 export const metadata = {
   title: "A.C Media - Athlete Photography",
@@ -23,12 +19,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://use.typekit.net/xjl1yqv.css" />
       </head>
       <body suppressHydrationWarning>
-        <BackgroundEffects />
-        <PageLoader />
-        <SmoothScrollProvider>
-          <Nav />
-          {children}
-        </SmoothScrollProvider>
+        {children}
       </body>
     </html>
   )

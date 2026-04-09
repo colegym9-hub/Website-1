@@ -834,7 +834,7 @@ export default function Funnel({ initialService }: { initialService?: string }) 
                   const r = await fetch("/api/book/partial", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(updated),
+                    body: JSON.stringify({ ...updated, partialLeadId }),
                   })
                   const j = (await r.json().catch(() => ({}))) as { ok?: boolean; leadId?: string }
                   if (typeof j.leadId === "string" && j.leadId) setPartialLeadId(j.leadId)
