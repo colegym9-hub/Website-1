@@ -4,10 +4,13 @@ import Link from "next/link"
 import { motion, useInView } from "framer-motion"
 import { useRef } from "react"
 import { Button } from "@/components/ui/button"
+import type { GlobalFooterContent } from "@/lib/site-content-schema"
+import { DEFAULT_GLOBAL_FOOTER } from "@/lib/site-content-defaults"
 
-export default function Footer() {
+export default function Footer({ content }: { content?: GlobalFooterContent }) {
   const ctaRef = useRef<HTMLDivElement>(null)
   const inView = useInView(ctaRef, { once: true, margin: "-10%" })
+  const f = content ?? DEFAULT_GLOBAL_FOOTER
 
   return (
     <footer className="bg-[var(--ac-bg)]">
@@ -22,7 +25,7 @@ export default function Footer() {
           transition={{ duration: 0.6, ease: [0.165, 0.84, 0.44, 1] }}
           className="text-[var(--ac-text-muted)] text-xs tracking-[0.3em] uppercase mb-5"
         >
-          Let&apos;s build it
+          {f.eyebrow}
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 40, skewY: 2 }}
@@ -31,9 +34,9 @@ export default function Footer() {
           className="font-heading text-[clamp(2.5rem,7vw,5.5rem)] text-[var(--ac-text)] leading-none mb-10"
           style={{ letterSpacing: "-0.03em" }}
         >
-          Ready to build
+          {f.headlineLine1}
           <br />
-          your image?
+          {f.headlineLine2}
         </motion.h2>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -44,8 +47,8 @@ export default function Footer() {
             asChild
             className="group rounded-lg bg-[var(--ac-accent)] text-[var(--ac-text)] hover:bg-[var(--ac-accent-hover)] hover:scale-[1.03] inline-flex items-center gap-3 px-8 py-4 text-sm font-medium tracking-widest uppercase transition-all duration-300"
           >
-            <Link href="/book">
-              Book a shoot
+            <Link href={f.ctaHref}>
+              {f.ctaText}
               <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
             </Link>
           </Button>
@@ -56,27 +59,26 @@ export default function Footer() {
       <div className="border-t border-[var(--ac-divider)] px-6 md:px-10 py-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <span className="font-heading text-[var(--ac-text)] text-sm tracking-[0.12em] uppercase">
-            A.C Media
+            {f.brandLine}
           </span>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-[var(--ac-text-muted)] tracking-widest uppercase">
-            <a
-              href="https://instagram.com/a_c.media"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[var(--ac-accent)] transition-colors"
-            >
-              @a_c.media
-            </a>
-            <a
-              href="mailto:alternate.creative.media@gmail.com"
-              className="hover:text-[var(--ac-accent)] transition-colors normal-case"
-            >
-              alternate.creative.media@gmail.com
-            </a>
+            {f.links.map((l) => (
+              <a
+                key={l.href + l.label}
+                href={l.href}
+                target={l.href.startsWith("http") ? "_blank" : undefined}
+                rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="hover:text-[var(--ac-accent)] transition-colors normal-case sm:uppercase"
+              >
+                {l.label}
+              </a>
+            ))}
           </div>
           <div className="flex flex-col sm:items-end gap-1 text-xs text-[var(--ac-text-muted)] tracking-widest uppercase">
-            <span>Binghamton, NY · Elmira-Corning, NY</span>
-            <span>© {new Date().getFullYear()} A.C Media</span>
+            <span>{f.locationLine}</span>
+            <span>
+              © {new Date().getFullYear()} {f.copyrightName}
+            </span>
           </div>
         </div>
       </div>

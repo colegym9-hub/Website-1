@@ -12,38 +12,24 @@ import { Button } from "@/components/ui/button"
 import { AboutNowSlide } from "@/components/about/about-now-slide"
 import { AboutScrollStack } from "@/components/about/about-scroll-stack"
 import { BeliefsBentoPartA, BeliefsBentoPartB } from "@/components/about/beliefs-bento"
-import { profileAsset, pillMilestones, collagePhotos, circlePortrait } from "@/lib/about-media"
-
-const nowSlideHeadline = "Now, every shoot is built around you"
-
-const nowSlideParagraphs = [
-  "Now, every shoot is built around the athlete. I'm not just showing up to take pictures. I'm there to build something with you. The camera is only part of it; the rest is how we run the day, read the room, and keep the bar high without making you perform for it.",
-  "I'm creating an environment where athletes can express who they are, with lighting, atmosphere, and direction that actually brings that out. We slow down when you need breath, push when you want edge, and keep the set honest so the frames feel like you. Not a version of you stitched together in post.",
-  "The goal is always the same: to create something that feels real, something you're proud of, not just something that looks good. Those images are going to follow your career. I treat them that way from the first frame to the last.",
-]
-
-const beliefs = [
-  {
-    label: "Athlete first",
-    title: "The athlete comes first.",
-    body: "Every decision, from the lighting to the direction, is made around you. Not the other way around.",
-  },
-  {
-    label: "Raw frame",
-    title: "Authenticity over polish.",
-    body: "The best sports portraits aren't the most perfect ones. They're the ones that feel real.",
-  },
-  {
-    label: "On set",
-    title: "Confidence is built on the set.",
-    body: "The environment matters. We create a space where you can relax, push, and become the subject.",
-  },
-  {
-    label: "Built to last",
-    title: "The image should last.",
-    body: "These photos will follow your career. We build them to hold up.",
-  },
-]
+import type {
+  AboutBeliefsContent,
+  AboutHeroContent,
+  AboutMilestonesContent,
+  AboutNowContent,
+  AboutPhotosContent,
+  AboutSlideContent,
+} from "@/lib/site-content-schema"
+export type AboutClientContent = {
+  hero: AboutHeroContent
+  slideBeginning: AboutSlideContent
+  slideWork: AboutSlideContent
+  now: AboutNowContent
+  beliefs: AboutBeliefsContent
+  milestones: AboutMilestonesContent
+  photos: AboutPhotosContent
+  closing: { headline: string; buttonText: string; buttonHref: string }
+}
 
 const glassPanelClass =
   "rounded-[2.5rem] border border-white/20 bg-[#0f0f0f]/80 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]"
@@ -61,7 +47,19 @@ const mobileItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.75, ease: [0.165, 0.84, 0.44, 1] } },
 }
 
-export default function AboutClient() {
+export default function AboutClient({ data }: { data: AboutClientContent }) {
+  const hero = data.hero
+  const beliefs = data.beliefs.cards
+  const pillRows = data.milestones.pills
+  const collagePhotos = data.photos.collage
+  const circlePortrait = data.photos.circlePortrait
+  const beliefPillThumbs = [
+    data.photos.beliefMediaDayHero,
+    data.photos.beliefBtsRaw,
+    { src: hero.profileSrc, alt: hero.profileAlt },
+    data.photos.beliefStrydsCollage[3] ?? data.photos.collage[0]!,
+  ]
+
   const containerRef = useRef<HTMLDivElement>(null)
   const heroImgRef = useRef<HTMLDivElement>(null)
   const heroHeadlineRef = useRef<HTMLHeadingElement>(null)
@@ -115,8 +113,8 @@ export default function AboutClient() {
             style={{ width: "clamp(280px, 48vw, 560px)" }}
           >
             <Image
-              src={profileAsset.src}
-              alt={profileAsset.alt}
+              src={hero.profileSrc}
+              alt={hero.profileAlt}
               width={600}
               height={400}
               className="h-auto w-full object-contain"
@@ -134,16 +132,12 @@ export default function AboutClient() {
               letterSpacing: "-0.02em",
             }}
           >
-            Every athlete has a story worth telling.
+            {hero.headline}
           </h1>
 
           <Card className={cn(glassPanelClass, "mt-12 w-full max-w-3xl py-10 shadow-none ring-0 md:mt-16 md:py-14")}>
             <CardContent className="flex flex-row flex-wrap justify-center gap-x-10 gap-y-8 px-4 md:gap-x-16">
-              {[
-                { number: "70+", label: "media days led" },
-                { number: "150+", label: "sporting events" },
-                { number: "30+", label: "senior sessions" },
-              ].map((stat) => (
+              {hero.stats.map((stat) => (
                 <div key={stat.label} className="flex flex-col items-center text-center">
                   <span
                     className="font-heading leading-none text-[var(--ac-text)]"
@@ -178,22 +172,22 @@ export default function AboutClient() {
         <div className="flex h-full w-full items-center justify-center px-2 sm:px-4 md:px-8">
           <div className={cn(glassPanelClass, "flex w-full max-w-6xl flex-col gap-8 p-6 sm:p-8 md:p-12 lg:flex-row lg:items-center lg:gap-16")}>
             <div className="flex flex-1 flex-col justify-center">
-              <span className={eyebrowClass}>The beginning</span>
+              <span className={eyebrowClass}>{data.slideBeginning.eyebrow}</span>
               <h2 className="mb-6 font-heading text-4xl leading-tight text-[var(--ac-text)] md:text-5xl lg:text-6xl">
-                Obsession over a business plan.
+                {data.slideBeginning.headline}
               </h2>
               <p className="max-w-xl text-base leading-relaxed text-[#D4D0CA] md:text-lg">
-                It started on the sidelines in 7th grade, capturing real moments. No strategy. Just an obsession to make every single frame better than the last.
+                {data.slideBeginning.body}
               </p>
             </div>
             <div className="flex flex-1 flex-col gap-3 md:gap-4 lg:max-w-[45%]">
-              {pillMilestones.map((row) => (
+              {pillRows.map((row) => (
                 <div
                   key={row.label}
                   className="flex items-center gap-4 rounded-full border border-white/20 bg-[#0f0f0f]/80 p-2 pe-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] backdrop-blur-2xl md:pe-8"
                 >
                   <Avatar className="size-14 shrink-0 border-2 border-transparent md:size-16">
-                    <AvatarImage src={row.thumb.src} alt={row.thumb.alt} className="object-cover" />
+                    <AvatarImage src={row.thumbSrc} alt={row.thumbAlt} className="object-cover" />
                     <AvatarFallback className="bg-white/10 text-white/50">CW</AvatarFallback>
                   </Avatar>
                   <span className="font-heading text-base text-[var(--ac-text)] md:text-lg">
@@ -232,12 +226,12 @@ export default function AboutClient() {
               })}
             </div>
             <div className="flex flex-1 flex-col justify-center lg:max-w-[45%]">
-              <span className={eyebrowClass}>The work</span>
+              <span className={eyebrowClass}>{data.slideWork.eyebrow}</span>
               <h2 className="mb-6 font-heading text-4xl leading-tight text-[var(--ac-text)] md:text-5xl lg:text-6xl">
-                I found my edge.
+                {data.slideWork.headline}
               </h2>
               <p className="text-base leading-relaxed text-[#D4D0CA] md:text-lg">
-                150+ sporting events and 30+ senior sessions later, I found my true edge. Today, after leading 70+ media days, A.C Media is built on one standard: creating images that go far beyond standard photos.
+                {data.slideWork.body}
               </p>
             </div>
           </div>
@@ -246,14 +240,22 @@ export default function AboutClient() {
         {/* Slide 3: Beliefs Part A */}
         <div className="flex h-full w-full items-center justify-center px-2 sm:px-4 md:px-8">
           <div className="w-full max-w-6xl">
-            <BeliefsBentoPartA beliefs={beliefs} motionMode="static" />
+            <BeliefsBentoPartA
+              beliefs={beliefs}
+              motionMode="static"
+              beliefPillThumbs={beliefPillThumbs}
+            />
           </div>
         </div>
 
         {/* Slide 4: Beliefs Part B */}
         <div className="flex h-full w-full items-center justify-center px-2 sm:px-4 md:px-8">
           <div className="w-full max-w-6xl">
-            <BeliefsBentoPartB beliefs={beliefs} motionMode="static" />
+            <BeliefsBentoPartB
+              beliefs={beliefs}
+              motionMode="static"
+              strydsCollage={data.photos.beliefStrydsCollage}
+            />
           </div>
         </div>
 
@@ -261,8 +263,8 @@ export default function AboutClient() {
         <div className="flex h-full w-full items-center justify-center px-2 sm:px-4 md:px-8">
           <div className={cn(glassPanelClass, "w-full max-w-6xl overflow-hidden")}>
             <AboutNowSlide
-              headline={nowSlideHeadline}
-              paragraphs={nowSlideParagraphs}
+              headline={data.now.headline}
+              paragraphs={data.now.paragraphs}
               primaryPhoto={circlePortrait}
               secondaryPhoto={collagePhotos[1]!}
             />
@@ -284,10 +286,10 @@ export default function AboutClient() {
             className="mb-8 font-heading leading-none text-[var(--ac-text)] md:mb-10"
             style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.5rem)", letterSpacing: "-0.02em" }}
           >
-            Ready to build your image?
+            {data.closing.headline}
           </h2>
           <Button asChild size="lg" className="rounded-lg px-10 py-6 text-base">
-            <Link href="/book">Book a shoot →</Link>
+            <Link href={data.closing.buttonHref}>{data.closing.buttonText}</Link>
           </Button>
         </motion.div>
       </div>

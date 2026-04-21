@@ -4,7 +4,8 @@ import React, { useRef, useLayoutEffect, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { ARC_NODES } from "./content";
+import type { HomeServicesContent } from "@/lib/site-content-schema"
+import { DEFAULT_HOME_SERVICES } from "@/lib/site-content-defaults"
 import styles from "./home-vertical-services.module.css";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +13,8 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function HomeArcServices() {
+export default function HomeArcServices({ content }: { content?: HomeServicesContent }) {
+  const nodes = content?.cards ?? DEFAULT_HOME_SERVICES.cards
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -130,7 +132,7 @@ export default function HomeArcServices() {
       {/* Segmented Dots Progress Bar */}
       <div className={styles.progressContainer}>
         <div className={styles.progressBar}>
-          {ARC_NODES.map((_, index) => (
+          {nodes.map((_, index) => (
             <button
               key={index} 
               aria-label={`Go to slide ${index + 1}`}
@@ -158,7 +160,7 @@ export default function HomeArcServices() {
       </div>
 
       <div className={styles.cardsWrapper}>
-        {ARC_NODES.map((node, index) => (
+        {nodes.map((node, index) => (
           <div 
             key={node.id} 
             ref={(el) => {
@@ -190,7 +192,7 @@ export default function HomeArcServices() {
               </h2>
               
               <div className={cn("anim-text", styles.btnWrapper)}>
-                 <Link href={`/book?service=${node.service}`} className={styles.btn}>
+                 <Link href={`/contact?service=${node.service}`} className={styles.btn}>
                   <span>Book Now</span>
                   <div className={styles.btnIcon}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

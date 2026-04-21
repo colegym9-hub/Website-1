@@ -539,7 +539,7 @@ export default function ServicePortals() {
       >
         <Scene
           progressRef={progressRef}
-          onFrameClick={(id) => router.push(`/book?service=${id}`)}
+          onFrameClick={(id) => router.push(`/contact?service=${id}`)}
         />
       </Canvas>
 

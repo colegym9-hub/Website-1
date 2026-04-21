@@ -186,7 +186,7 @@ export default function WhatWeOffer() {
   }, [])
 
   const handleServiceClick = (serviceId: string) => {
-    router.push(`/book?service=${serviceId}`)
+    router.push(`/contact?service=${serviceId}`)
   }
 
   // Shared hand card base styles (GSAP will animate opacity in)

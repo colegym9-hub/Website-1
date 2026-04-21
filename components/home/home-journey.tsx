@@ -2,11 +2,13 @@
 
 import React from "react"
 import Link from "next/link"
-import { JOURNEY_HEADSHOTS, JOURNEY_LEGENDARY_IMAGES, JOURNEY_WATERMARK } from "./content"
 import styles from "./home-journey.module.css"
 import { cn } from "@/lib/utils"
+import type { HomeJourneyContent } from "@/lib/site-content-schema"
+import { DEFAULT_HOME_JOURNEY } from "@/lib/site-content-defaults"
 
-export default function HomeJourney() {
+export default function HomeJourney({ content }: { content?: HomeJourneyContent }) {
+  const j = content ?? DEFAULT_HOME_JOURNEY
   return (
     <section data-section="journey" className={styles.section} id="ac-journey-section">
       <div className={cn(styles.ambientOrb, styles.orbTopLeft)} aria-hidden />
@@ -16,31 +18,24 @@ export default function HomeJourney() {
         <div className={styles.abstractGallery}>
           <div
             className={cn(styles.galleryShape, styles.shapePill)}
-            style={{ backgroundImage: `url(${JOURNEY_LEGENDARY_IMAGES.pill})` }}
+            style={{ backgroundImage: `url(${j.pillImage})` }}
           />
           <div
             className={cn(styles.galleryShape, styles.shapeCircle)}
-            style={{ backgroundImage: `url(${JOURNEY_LEGENDARY_IMAGES.circle})` }}
+            style={{ backgroundImage: `url(${j.circleImage})` }}
           />
         </div>
 
         <div className={styles.glassCard}>
           <h2 className={styles.journeyHeading}>
-            Let&apos;s Create Something
+            {j.headlineLine1}
             <br />
-            <span className={styles.textTeal}>Legendary</span>
+            <span className={styles.textTeal}>{j.accentWord}</span>
           </h2>
-          <p className={styles.journeyParagraph}>
-            I&apos;m not just here to take photos. I&apos;m here to capture the energy, the grit, and the
-            moments that define you and your team. Whether it&apos;s the intensity of a media day or the
-            individuality of a senior portrait, my goal is to make you feel confident, hyped, and truly
-            seen.
-          </p>
-          <p className={styles.journeyParagraph}>
-            Every session is a collaboration, a chance to showcase your story through powerful imagery.
-          </p>
-          <Link href="/book" className={styles.journeyBtn}>
-            Click Here To Create Something Amazing
+          <p className={styles.journeyParagraph}>{j.paragraph1}</p>
+          <p className={styles.journeyParagraph}>{j.paragraph2}</p>
+          <Link href={j.ctaHref} className={styles.journeyBtn}>
+            {j.ctaText}
           </Link>
         </div>
       </div>
@@ -48,13 +43,13 @@ export default function HomeJourney() {
       <div className={cn(styles.journeyBlock, styles.blockAbout)}>
         <div
           className={styles.watermarkLogo}
-          style={{ backgroundImage: `url(${JOURNEY_WATERMARK})` }}
+          style={{ backgroundImage: `url(${j.watermark})` }}
           aria-hidden
         />
 
         <div
           className={cn(styles.aboutHeadshot, styles.headshotLeft)}
-          style={{ backgroundImage: `url(${JOURNEY_HEADSHOTS.left})` }}
+          style={{ backgroundImage: `url(${j.headshotLeft})` }}
           role="img"
           aria-label=""
         />
@@ -74,7 +69,7 @@ export default function HomeJourney() {
 
         <div
           className={cn(styles.aboutHeadshot, styles.headshotRight)}
-          style={{ backgroundImage: `url(${JOURNEY_HEADSHOTS.right})` }}
+          style={{ backgroundImage: `url(${j.headshotRight})` }}
           role="img"
           aria-label=""
         />

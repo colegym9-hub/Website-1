@@ -387,7 +387,7 @@ export default function HeroTunnel() {
             style={{ opacity: 0 }}
             className="relative rounded-lg border-[var(--ac-accent-mid)] bg-[color-mix(in_srgb,var(--ac-accent)_15%,transparent)] text-[var(--ac-accent-mid)] hover:bg-[color-mix(in_srgb,var(--ac-accent)_30%,transparent)] hover:border-[var(--ac-accent-hover)] hover:text-white px-6 py-2.5 text-sm tracking-wide transition-all duration-300"
           >
-            <Link href="/book">
+            <Link href="/contact">
               {"Book Now"}
               <span
                 ref={underlineRef}

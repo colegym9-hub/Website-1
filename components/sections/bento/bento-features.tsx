@@ -215,7 +215,7 @@ export default function BentoFeatures() {
                   Ready when you are.
                 </p>
                 <a
-                  href="/book"
+                  href="/contact"
                   className="mt-2 inline-flex w-fit rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium tracking-wide text-white transition-colors hover:bg-white/20"
                 >
                   Start →

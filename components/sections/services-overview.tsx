@@ -10,14 +10,14 @@ const services = [
     body: "Production-level imagery built around your team. Bold lighting. Real athletes.",
     from: "Media days from $900",
     photo: "https://images.pixieset.com/821255111/d62fa665236011d8960c26653b1192d8-xlarge.jpg",
-    href: "/book",
+    href: "/contact",
   },
   {
     title: "Senior Portraits",
     body: "Who you are as a person and as an athlete. Built for the athlete, not just the senior.",
     from: "Senior portraits from $350",
     photo: "https://images.pixieset.com/821255111/fa0072d497fb493669cbb5e6c085b81b-xlarge.jpg",
-    href: "/book",
+    href: "/contact",
   },
 ]
 

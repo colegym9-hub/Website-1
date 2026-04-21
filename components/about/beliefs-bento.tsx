@@ -70,14 +70,18 @@ export function BeliefsBentoPartA({
   beliefs,
   motionMode = "inView",
   unstyled = false,
+  /** Override pill avatars (4) — defaults to bundled about-media assets */
+  beliefPillThumbs,
 }: {
   beliefs: Belief[]
   motionMode?: MotionMode
   /** When true, no outer card shell (e.g. inside combined {@link BeliefsBento}). */
   unstyled?: boolean
+  beliefPillThumbs?: AboutPhoto[]
 }) {
   const reduceMotion = useReducedMotion()
   const staticMotion = motionMode === "static" || reduceMotion
+  const thumbs = beliefPillThumbs ?? beliefThumbs
 
   const inner = (
       <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
@@ -104,7 +108,7 @@ export function BeliefsBentoPartA({
         <div className="flex flex-col gap-3 md:gap-4 lg:col-span-7">
           {beliefs.map((b, idx) => {
             const [c0, c1] = pillMesh[idx % pillMesh.length]!
-            const thumb = beliefThumbs[idx] ?? beliefMediaDayHero
+            const thumb = thumbs[idx] ?? beliefMediaDayHero
             return (
               <motion.article
                 key={b.label}
@@ -158,13 +162,17 @@ export function BeliefsBentoPartB({
   beliefs,
   motionMode = "inView",
   unstyled = false,
+  strydsCollage,
 }: {
   beliefs: Belief[]
   motionMode?: MotionMode
   unstyled?: boolean
+  /** 5 images for overlapping collage — defaults to bundled beliefStrydsCollage */
+  strydsCollage?: AboutPhoto[]
 }) {
   const reduceMotion = useReducedMotion()
   const staticMotion = motionMode === "static" || reduceMotion
+  const collagePhotos = strydsCollage ?? beliefStrydsCollage
 
   const inner = (
       <div className="relative min-h-[240px] md:min-h-[300px] lg:min-h-[340px]">
@@ -185,7 +193,7 @@ export function BeliefsBentoPartB({
           </div>
 
           <div className="relative mx-auto aspect-[4/3] w-full max-w-lg min-h-[200px] md:aspect-[5/4] md:max-w-xl lg:col-span-8 lg:mx-0 lg:max-w-none">
-            {beliefStrydsCollage.map((photo, layoutIdx) => {
+            {collagePhotos.map((photo, layoutIdx) => {
               const slot = collageLayout[layoutIdx]
               if (!slot) return null
               return (

@@ -7,14 +7,12 @@ import { motion } from "framer-motion"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
+import type { GlobalNavContent } from "@/lib/site-content-schema"
+import { DEFAULT_GLOBAL_NAV } from "@/lib/site-content-defaults"
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/work", label: "Work" },
-]
-
-export default function Nav() {
+export default function Nav({ content }: { content?: GlobalNavContent }) {
+  const nav = content ?? DEFAULT_GLOBAL_NAV
+  const links = nav.links
   const [scrolled, setScrolled] = useState(false)
   const [openForPath, setOpenForPath] = useState<string | null>(null)
   const pathname = usePathname()
@@ -46,7 +44,7 @@ export default function Nav() {
           href="/"
           className="font-heading text-[var(--ac-text)] tracking-[0.15em] uppercase text-sm md:text-base hover:text-[var(--ac-accent)] transition-colors duration-300"
         >
-          A.C Media
+          {nav.brandLabel}
         </Link>
 
         <div className="flex items-center gap-4">
@@ -54,7 +52,7 @@ export default function Nav() {
             asChild
             className="hidden sm:inline-flex rounded-lg bg-[var(--ac-accent)] text-[var(--ac-text)] hover:bg-[var(--ac-accent-hover)] hover:scale-[1.03] px-5 py-2 text-xs font-medium tracking-widest uppercase transition-all duration-300"
           >
-            <Link href="/book">Book Now</Link>
+            <Link href={nav.ctaHref}>{nav.ctaText}</Link>
           </Button>
 
           <button
@@ -133,18 +131,18 @@ export default function Nav() {
           >
             <Separator className="bg-[var(--ac-divider)]" />
             <a
-              href="https://instagram.com/a_c.media"
+              href={nav.sheetSocialHref}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--ac-text-muted)] hover:text-[var(--ac-accent)] transition-colors text-xs tracking-widest uppercase"
             >
-              @a_c.media
+              {nav.sheetSocialLabel}
             </a>
             <Button
               asChild
               className="sm:hidden rounded-lg bg-[var(--ac-accent)] text-[var(--ac-text)] hover:bg-[var(--ac-accent-hover)] hover:scale-[1.03] px-6 py-3 text-xs font-medium tracking-widest uppercase transition-all duration-300"
             >
-              <Link href="/book">Book Now</Link>
+              <Link href={nav.ctaHref}>{nav.ctaText}</Link>
             </Button>
           </motion.div>
         </SheetContent>
