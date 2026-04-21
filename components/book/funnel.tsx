@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Slider } from "@/components/ui/slider"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -99,18 +102,18 @@ const SPORTS_LIST = ["Football","Basketball","Soccer","Baseball","Softball","Vol
 
 // ─── Packages ─────────────────────────────────────────────────────────────────
 
-interface Pkg { name: string; price: string; desc: string; tag?: string }
+interface Pkg { name: string; price: string; blurb?: string; desc: string; tag?: string }
 
 const SP_PKGS: Pkg[] = [
-  { name: "Basic Sportrait", price: "$400", desc: "1 hr · 1 location · 3 retouched · 20+ edited · Studio lighting · Digital gallery + print rights" },
-  { name: "Premium Sportrait", price: "$500", desc: "2 hrs · Up to 2 locations · 5 retouched · 30+ edited · Studio lighting · Water / smoke effects · Full gallery", tag: "Most Popular" },
-  { name: "Deluxe Sportrait", price: "$700", desc: "3 hrs · Unlimited locations · 10 retouched · 40+ edited · Studio lighting · Water / smoke effects · Full gallery" },
+  { name: "Basic Sportrait", price: "$400", blurb: "Enough time to get real portraits. Nothing rushed.", desc: "1 hr · 1 location · 3 retouched · 20+ edited · Studio lighting · Digital gallery + print rights" },
+  { name: "Premium Sportrait", price: "$500", blurb: "Two hours, two looks, room to get the shots you actually want.", desc: "2 hrs · Up to 2 locations · 5 retouched · 30+ edited · Studio lighting · Water / smoke effects · Full gallery", tag: "Most Popular" },
+  { name: "Deluxe Sportrait", price: "$700", blurb: "The full day. Time to chase whatever light or location works.", desc: "3 hrs · Unlimited locations · 10 retouched · 40+ edited · Studio lighting · Water / smoke effects · Full gallery" },
 ]
 const SR_PKGS: Pkg[] = [
-  { name: "Basic", price: "$350", desc: "1 hr · 1 location · Unlimited outfits · 3 retouched · 20+ edited · Digital gallery + print rights" },
-  { name: "Premium", price: "$500", desc: "2 hrs · Up to 2 locations · 5 retouched · 30+ edited · Professional lighting · Full gallery + print rights", tag: "Most Popular" },
-  { name: "Deluxe", price: "$600", desc: "3 hrs · Unlimited locations + outfits · 10 retouched · 40+ edited · Option to split across days · Full gallery" },
-  { name: "The Whole Thing", price: "$750", desc: "Senior portraits + Sportraits in one production. 1.5 hrs each · Dramatic lighting · Water / smoke effects · 60+ edited · Can split across days", tag: "Best Value" },
+  { name: "Basic", price: "$350", blurb: "An hour to lock in a few looks that feel like you.", desc: "1 hr · 1 location · Unlimited outfits · 3 retouched · 20+ edited · Digital gallery + print rights" },
+  { name: "Premium", price: "$500", blurb: "Two hours, two spots, enough room to actually move.", desc: "2 hrs · Up to 2 locations · 5 retouched · 30+ edited · Professional lighting · Full gallery + print rights", tag: "Most Popular" },
+  { name: "Deluxe", price: "$600", blurb: "All day if you want it. Different light, different looks, different you.", desc: "3 hrs · Unlimited locations + outfits · 10 retouched · 40+ edited · Option to split across days · Full gallery" },
+  { name: "The Whole Thing", price: "$750", blurb: "Senior portraits and sportraits in the same production.", desc: "1.5 hrs each · Dramatic lighting · Water / smoke effects · 60+ edited · Can split across days", tag: "Best Value" },
 ]
 
 // ─── MD pricing calculator ────────────────────────────────────────────────────
@@ -126,11 +129,13 @@ function getMdPkgsForRoster(count: number): Pkg[] {
     {
       name: "Premium Media Day",
       price: calcMdPrice(900, 75, count),
+      blurb: "Every athlete done right. Clean light, one strong setup, we keep the pace.",
       desc: "Up to 12 athletes included in base price · 1 standard + 3 choice poses · 5 edited images per athlete · Studio lighting · Full gallery",
     },
     {
       name: "Deluxe Media Day",
       price: calcMdPrice(1500, 125, count),
+      blurb: "A real production day. Multiple setups, smoke, fire, advanced lighting.",
       desc: "Up to 12 athletes included in base price · 3 to 6 hr full production · 2 to 3 standard + 5+ poses · Multiple group concepts · Advanced lighting · Smoke, water + fire effects · Full gallery",
       tag: "Full Production",
     },
@@ -142,31 +147,31 @@ function getMdPkgsForRoster(count: number): Pkg[] {
 interface Frame { label: string; body: string; pkgIdx: number }
 
 const MD_FRAMES: Frame[] = [
-  { label: "Portraits that deliver.", body: "Every athlete looking their best. Consistent, clean, and professional. Efficient use of your team's time.", pkgIdx: 0 },
-  { label: "A full production day.", body: "Multiple poses, different setups, smoke and lighting effects. Photos that make your program look elite.", pkgIdx: 1 },
-  { label: "The biggest statement you can make.", body: "Everything we have. Extended time, fire and smoke, advanced setups. A media day your program remembers.", pkgIdx: 1 },
+  { label: "Every athlete, clean portraits, no drag.", body: "One strong setup, real light, a pace that keeps the team's energy up. Everyone walks out with the shots.", pkgIdx: 0 },
+  { label: "Treat the day like a production.", body: "Multiple setups, smoke, controlled light, poses that give each athlete real options. Not the same frame twelve times.", pkgIdx: 1 },
+  { label: "Go as big as the season deserves.", body: "Extra hours, fire, smoke, custom concepts built for the program. The shoot the roster talks about next year.", pkgIdx: 1 },
 ]
 const SP_FRAMES: Frame[] = [
   {
     label: "The look people actually post.",
-    body: "One location, one hour, no filler poses. We build around your sport and your edge — so it feels like you, not a stock athlete portrait.",
+    body: "One location, one hour, no filler poses. We build around your sport and your edge, so it feels like you, not a stock athlete portrait.",
     pkgIdx: 0,
   },
   {
     label: "More than one side of the story.",
-    body: "Different locations and looks in one session. Same intensity start to finish — varsity energy without the chaos.",
+    body: "Different locations and looks in one session. Same intensity start to finish. Varsity energy without the chaos.",
     pkgIdx: 1,
   },
   {
     label: "When you want the full treatment.",
-    body: "Unlimited locations, cinematic effects, and the time to get the shots you imagined — not the ones you settle for.",
+    body: "Unlimited locations, cinematic effects, and the time to get the shots you imagined. Not the ones you settle for.",
     pkgIdx: 2,
   },
 ]
 const SR_FRAMES: Frame[] = [
   {
     label: "Every shot should feel like me.",
-    body: "Personality-forward. We build the session around who you are. Your energy, your style, your ideas. Not just where to stand.",
+    body: "Personality first. We build the session around who you are. Your energy, your style, your ideas. Not just where to stand.",
     pkgIdx: 1,
   },
   {
@@ -175,8 +180,8 @@ const SR_FRAMES: Frame[] = [
     pkgIdx: 2,
   },
   {
-    label: "Portraits + athlete identity in one session.",
-    body: "Senior portraits and Sportraits combined. Both sides of who you are, captured in one production.",
+    label: "Portraits and athlete identity in one session.",
+    body: "Senior portraits and sportraits together. Both sides of who you are, both in one day.",
     pkgIdx: 3,
   },
 ]
@@ -263,7 +268,8 @@ function PkgCard({ pkg, recommended, selected, onSelect }: { pkg: Pkg; recommend
       )}
       <p className="font-heading text-white text-lg pr-28">{pkg.name}</p>
       <p className="text-[var(--ac-accent)] font-heading text-2xl mt-0.5">{pkg.price}</p>
-      <p className="text-[#666] text-xs mt-3 leading-relaxed">{pkg.desc}</p>
+      {pkg.blurb && <p className="text-white/85 text-sm mt-3 leading-relaxed">{pkg.blurb}</p>}
+      <p className="text-[#666] text-xs mt-2 leading-relaxed">{pkg.desc}</p>
       <div className="mt-4 text-[10px] uppercase tracking-widest text-[#444] hover:text-[var(--ac-accent)] transition-colors">
         {selected ? <span className="text-[var(--ac-accent)]">✓ Selected</span> : "Select →"}
       </div>
@@ -379,24 +385,25 @@ function Nav({ onBack, onNext, nextLabel = "Continue", nextDisabled = false, sho
       style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)" }}>
       {showBack && onBack
         ? (
-          <button onClick={onBack}
-            className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs text-[#555] border border-[#1e1e1e] hover:border-[#333] hover:text-[#888] transition-all uppercase tracking-widest bg-[#0a0a0a]">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="pointer-events-auto h-auto px-4 py-2.5 rounded-lg text-xs text-[#555] border-[#1e1e1e] bg-[#0a0a0a] hover:border-[#333] hover:bg-[#0a0a0a] hover:text-[#888] uppercase tracking-widest"
+          >
             ← Back
-          </button>
+          </Button>
         )
         : <div />}
       {onNext && (
-        <motion.button
+        <Button
+          type="button"
           onClick={onNext}
           disabled={nextDisabled}
-          whileHover={nextDisabled ? {} : { scale: 1.03 }}
-          whileTap={nextDisabled ? {} : { scale: 0.97 }}
-          className="pointer-events-auto flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all
-            bg-[var(--ac-accent)] text-[#071314] hover:bg-[var(--ac-accent-hover)]
-            disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(127,184,190,0.25)]"
+          className="pointer-events-auto h-auto px-6 py-3 rounded-lg text-sm font-semibold tracking-wide bg-[var(--ac-accent)] text-[#071314] hover:bg-[var(--ac-accent-hover)] disabled:opacity-30 shadow-[0_0_20px_rgba(127,184,190,0.25)]"
         >
           {nextLabel} →
-        </motion.button>
+        </Button>
       )}
     </div>
   )
@@ -422,8 +429,8 @@ function ContactForm({ defaults, onDone, framing }: {
   const { register, handleSubmit, formState: { errors, isValid } } = useForm<CF>({
     resolver: zodResolver(contactSchema), defaultValues: defaults, mode: "onChange",
   })
-  const cls = "w-full bg-transparent border-b border-[#2a2a2a] text-white text-sm py-3 outline-none placeholder:text-[#3a3a3a] focus:border-[var(--ac-accent)] transition-colors"
-  const ta = "w-full mt-2 bg-[#111] border border-[#2a2a2a] rounded-xl text-white text-sm p-3 placeholder:text-[#3a3a3a] outline-none focus:border-[var(--ac-accent)] transition-colors resize-none min-h-[72px]"
+  const inputCls = "h-11 rounded-xl bg-[#111] border-[#2a2a2a] text-white text-sm px-4 placeholder:text-[#3a3a3a]"
+  const taCls = "mt-2 rounded-xl bg-[#111] border-[#2a2a2a] text-white text-sm p-3 placeholder:text-[#3a3a3a] resize-none min-h-[72px]"
   return (
     <form
       onSubmit={handleSubmit(async data => {
@@ -438,24 +445,24 @@ function ContactForm({ defaults, onDone, framing }: {
     >
       <p className="text-[#555] text-xs text-center leading-relaxed">{framing}</p>
       <div>
-        <input {...register("name")} placeholder="Full name *" className={cls} />
+        <Input {...register("name")} placeholder="Full name *" className={inputCls} aria-invalid={!!errors.name} />
         {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
       </div>
       <div>
-        <input {...register("email")} type="email" placeholder="Email *" className={cls} />
+        <Input {...register("email")} type="email" placeholder="Email *" className={inputCls} aria-invalid={!!errors.email} />
         {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
       </div>
-      <input {...register("phone")} type="tel" placeholder="Phone (optional)" className={cls} />
-      <input {...register("org")} placeholder="School / team / org (optional)" className={cls} />
+      <Input {...register("phone")} type="tel" placeholder="Phone (optional)" className={inputCls} />
+      <Input {...register("org")} placeholder="School / team / org (optional)" className={inputCls} />
       <div>
-        <label className="text-[#555] text-[10px] uppercase tracking-widest">Anything we should know? (optional)</label>
-        <textarea {...register("notes")} placeholder="Short note, constraints, references, etc." className={ta} rows={2} />
+        <label className="text-[#555] text-[10px] uppercase tracking-widest">Anything Cole should know? (optional)</label>
+        <Textarea {...register("notes")} placeholder="Quick note, questions, references, whatever." className={taCls} rows={2} />
       </div>
       <div className="flex justify-center">
-        <button type="submit" disabled={!isValid || pending}
-          className="mt-2 px-8 py-3 bg-[var(--ac-accent)] text-[#0d2224] font-heading rounded-lg text-sm disabled:opacity-30 hover:bg-[var(--ac-accent-hover)] transition-colors">
-          {pending ? "Saving…" : "Continue →"}
-        </button>
+        <Button type="submit" disabled={!isValid || pending}
+          className="mt-2 h-auto px-8 py-3 bg-[var(--ac-accent)] text-[#0d2224] font-heading rounded-lg text-sm disabled:opacity-30 hover:bg-[var(--ac-accent-hover)]">
+          {pending ? "Sending…" : "Continue →"}
+        </Button>
       </div>
     </form>
   )
@@ -485,13 +492,14 @@ function PackageRec({ pkgs, recIdx, selected, onSelect, onNext, submitting }:
         </>
       )}
       <div className="flex justify-center mt-8">
-        <button
+        <Button
+          type="button"
           onClick={onNext}
           disabled={!selected || submitting}
-          className="px-8 py-3 bg-[var(--ac-accent)] text-[#0d2224] font-heading rounded-lg text-sm disabled:opacity-30 hover:bg-[var(--ac-accent-hover)] transition-colors"
+          className="h-auto px-8 py-3 bg-[var(--ac-accent)] text-[#0d2224] font-heading rounded-lg text-sm disabled:opacity-30 hover:bg-[var(--ac-accent-hover)]"
         >
           {submitting ? "Sending…" : "Get my quote →"}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -550,7 +558,7 @@ export default function Funnel({ initialService }: { initialService?: string }) 
   const timelines = stepId === "sr-timeline" ? SR_TIMELINES : TIMELINES
   const thankYouIdx = path.indexOf("thank-you")
 
-  /** Awaits POST; only advances on success. On failure or bad JSON, stay on rec step — default ctaVariant warm_up if response unusable (no false calendar promise). */
+  /** Awaits POST; only advances on success. On failure or bad JSON, stay on rec step. Default ctaVariant warm_up if response unusable (no false calendar promise). */
   const finish = async (finalFd: FD) => {
     setSubmitError(null)
     setSubmitting(true)
@@ -574,7 +582,7 @@ export default function Funnel({ initialService }: { initialService?: string }) 
         data = {}
       }
       if (!res.ok) {
-        setSubmitError(data.error || "Something went wrong. Please try again or email us.")
+        setSubmitError(data.error || "Something broke on our side. Try again, or email Cole directly.")
         setSubmitting(false)
         return
       }
@@ -589,7 +597,7 @@ export default function Funnel({ initialService }: { initialService?: string }) 
       })
       if (thankYouIdx !== -1) goTo(thankYouIdx)
     } catch {
-      setSubmitError("Network error. Check your connection and try again.")
+      setSubmitError("Connection dropped. Check your signal and try again.")
     } finally {
       setSubmitting(false)
     }
@@ -621,8 +629,8 @@ export default function Funnel({ initialService }: { initialService?: string }) 
         const avail = fd.role ? ROLE_SERVICES[fd.role] : (["media-day", "sportraits", "senior-portraits"] as Service[])
         const svcs = SERVICES.filter(s => avail.includes(s.id))
         const blurbs: Record<string, string> = {
-          "media-day": "Full team shoot for athletes, coaches, and program identity.",
-          "sportraits": "Individual athlete portraits with cinematic lighting.",
+          "media-day": "Team shoot built around your roster and program.",
+          "sportraits": "One-on-one portraits, built around your sport.",
           "senior-portraits": "Your senior year, shot like a production.",
         }
         return (
@@ -674,7 +682,7 @@ export default function Funnel({ initialService }: { initialService?: string }) 
         return (
           <>
             <H>How big is your roster?</H>
-            <Sub>This helps us dial in the right package and pricing for your team.</Sub>
+            <Sub>Pricing scales with the number. Rough count is fine.</Sub>
             <div className="max-w-sm mx-auto mt-10">
               <Slider value={[fd.rosterSize]} min={1} max={60} onValueChange={v => upd("rosterSize", v[0])}
                 className="[&>[data-slot=slider-track]]:bg-[#2a2a2a] [&>[data-slot=slider-range]]:bg-[var(--ac-accent)] [&>[data-slot=slider-thumb]]:bg-[var(--ac-accent)]" />
@@ -696,12 +704,12 @@ export default function Funnel({ initialService }: { initialService?: string }) 
           <>
             <H>Where are you based?</H>
             <Sub>We primarily work in New York and Pennsylvania. Type your city or pick one below.</Sub>
-            <input
+            <Input
               type="text"
               value={fd.location}
               onChange={e => upd("location", e.target.value)}
               placeholder="City, State (e.g. Elmira, NY)"
-              className="w-full mt-6 bg-[#111] border border-[#2a2a2a] rounded-xl text-white text-sm px-4 py-3 placeholder:text-[#3a3a3a] outline-none focus:border-[var(--ac-accent)]"
+              className="h-11 mt-6 rounded-xl bg-[#111] border-[#2a2a2a] text-white text-sm px-4 placeholder:text-[#3a3a3a]"
             />
             <p className="text-[10px] text-[#444] mt-4 uppercase tracking-wider">Common areas</p>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -754,12 +762,12 @@ export default function Funnel({ initialService }: { initialService?: string }) 
             </div>
             {fd.timeline && (
               <div className="mt-5">
-                <textarea
+                <Textarea
                   value={fd.timelineNote}
                   onChange={e => upd("timelineNote", e.target.value)}
-                  placeholder={isOpen ? "Tell us more, like after graduation in June, or after the season ends..." : "Any other timing details? (optional)"}
+                  placeholder={isOpen ? "Tell us more. After graduation in June, after the season ends, whatever you have in mind." : "Any other timing details? (optional)"}
                   rows={isOpen ? 3 : 2}
-                  className="w-full bg-[#111] border border-[#2a2a2a] rounded-xl text-white text-sm p-4 placeholder:text-[#3a3a3a] outline-none focus:border-[var(--ac-accent)] transition-colors resize-none"
+                  className="rounded-xl bg-[#111] border-[#2a2a2a] text-white text-sm p-4 placeholder:text-[#3a3a3a] resize-none"
                 />
               </div>
             )}
@@ -853,8 +861,8 @@ export default function Funnel({ initialService }: { initialService?: string }) 
       case "md-custom-quote":
         return (
           <>
-            <H>This one needs a custom quote.</H>
-            <Sub>Rosters over 35 athletes are priced individually. We will put together a full breakdown based on your team size, shoot goals, and timeline.</Sub>
+            <H>Teams over 35 get a custom quote.</H>
+            <Sub>Cole will scope the day with you and send a number that fits the roster.</Sub>
             <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-5 mt-8 text-left">
               <p className="text-[#555] text-xs uppercase tracking-widest mb-3">What you submitted</p>
               {fd.sport && <Row label="Sport" val={fd.sport} />}
@@ -865,13 +873,14 @@ export default function Funnel({ initialService }: { initialService?: string }) 
               {fd.email && <Row label="Email" val={fd.email} />}
             </div>
             <div className="flex justify-center mt-8">
-              <button
+              <Button
+                type="button"
                 onClick={() => { void finish({ ...fd }) }}
                 disabled={submitting}
-                className="px-8 py-3 bg-[var(--ac-accent)] text-[#0d2224] font-heading rounded-lg text-sm disabled:opacity-30 hover:bg-[var(--ac-accent-hover)] transition-colors"
+                className="h-auto px-8 py-3 bg-[var(--ac-accent)] text-[#0d2224] font-heading rounded-lg text-sm disabled:opacity-30 hover:bg-[var(--ac-accent-hover)]"
               >
-                {submitting ? "Sending..." : "Send my info to Cole"}
-              </button>
+                {submitting ? "Sending…" : "Send my info to Cole"}
+              </Button>
             </div>
             {submitError && <p className="text-red-400 text-xs text-center mt-4">{submitError}</p>}
             <Nav onBack={bk} />
@@ -927,12 +936,12 @@ export default function Funnel({ initialService }: { initialService?: string }) 
             </div>
             {fd.sessionType === "Other" && (
               <div className="mt-4">
-                <textarea
+                <Textarea
                   value={fd.sessionTypeNote}
                   onChange={e => upd("sessionTypeNote", e.target.value)}
-                  placeholder="Tell us what you have in mind..."
+                  placeholder="What do you have in mind?"
                   rows={3}
-                  className="w-full bg-[#111] border border-[#2a2a2a] rounded-xl text-white text-sm p-4 placeholder:text-[#3a3a3a] outline-none focus:border-[var(--ac-accent)] transition-colors resize-none"
+                  className="rounded-xl bg-[#111] border-[#2a2a2a] text-white text-sm p-4 placeholder:text-[#3a3a3a] resize-none"
                 />
               </div>
             )}
@@ -967,8 +976,8 @@ export default function Funnel({ initialService }: { initialService?: string }) 
             : "/resources/welcome-pack"
         const warmNurtureBlurb =
           tier === "nurture"
-            ? "Thanks for raising your hand. Cole will follow up within one business day — check your inbox (and spam). While you’re deciding, the welcome guide below answers the questions people ask first."
-            : "Thanks for the details — Cole will follow up within one business day. Check your inbox (and spam). The welcome guide below is there if you want a head start before you hear from him."
+            ? "Thanks for raising your hand. Cole will follow up within one business day. Check your inbox (and spam). While you're deciding, the welcome guide below answers the questions people ask first."
+            : "Thanks for the details. Cole will follow up within one business day. Check your inbox (and spam). The welcome guide below is there if you want a head start before you hear from him."
         return (
           <div className="text-center">
             <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}>
