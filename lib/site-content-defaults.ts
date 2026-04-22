@@ -7,6 +7,7 @@ import type {
   AboutSlideContent,
   GlobalFooterContent,
   GlobalNavContent,
+  HomeEnvelopeContent,
   HomeHeroContent,
   HomeJourneyContent,
   HomeServicesContent,
@@ -84,6 +85,27 @@ export const DEFAULT_HOME_SERVICES: HomeServicesContent = {
     image: n.image,
     bgPosition: n.bgPosition,
   })),
+}
+
+export const DEFAULT_HOME_ENVELOPE: HomeEnvelopeContent = {
+  headline: "Want to learn more?",
+  subhead: "Leave me a line and I'll follow up.",
+  envelopeTo: "To Cole",
+  salutation: "Hi Cole,",
+  nameLeadIn: "My name is",
+  wantLeadIn: "and I want to learn more about",
+  emailLeadIn: "Email me at",
+  phoneLeadIn: "My number is",
+  phoneOptionalLabel: "optional",
+  submitLabel: "Mail it",
+  submittingLabel: "Sending",
+  successText: "Sent. Talk soon.",
+  errorTextGeneric: "Something went off. Try again?",
+  errorTextName: "i need your name",
+  errorTextEmail: "i need your email to write back",
+  errorTextMessage: "tell me what you want to learn about",
+  wordmarkUrl:
+    "https://umjucqufenlhkezouejq.supabase.co/storage/v1/object/public/A.C%20Media%20Website%20Photos%201/2nd.HvnArtboard%2034%404x.png",
 }
 
 export const DEFAULT_ABOUT_HERO: AboutHeroContent = {

@@ -47,6 +47,28 @@ export const homeServicesSchema = z.object({
 })
 export type HomeServicesContent = z.infer<typeof homeServicesSchema>
 
+/** ─── Home: Envelope CTA ───────────────────────────────────────────────── */
+export const homeEnvelopeSchema = z.object({
+  headline: z.string(),
+  subhead: z.string(),
+  envelopeTo: z.string(),
+  salutation: z.string(),
+  nameLeadIn: z.string(),
+  wantLeadIn: z.string(),
+  emailLeadIn: z.string(),
+  phoneLeadIn: z.string(),
+  phoneOptionalLabel: z.string(),
+  submitLabel: z.string(),
+  submittingLabel: z.string(),
+  successText: z.string(),
+  errorTextGeneric: z.string(),
+  errorTextName: z.string(),
+  errorTextEmail: z.string(),
+  errorTextMessage: z.string(),
+  wordmarkUrl: z.string(),
+})
+export type HomeEnvelopeContent = z.infer<typeof homeEnvelopeSchema>
+
 /** ─── About ───────────────────────────────────────────────────────────── */
 export const aboutHeroStatSchema = z.object({
   number: z.string(),
@@ -172,6 +194,7 @@ export const SITE_CONTENT_IDS = [
   "home:hero",
   "home:journey",
   "home:services",
+  "home:envelope",
   "about:hero",
   "about:slide-beginning",
   "about:slide-work",
