@@ -133,60 +133,39 @@ export type GlobalNavContent = z.infer<typeof globalNavSchema>
 /** ─── Work gallery layout ───────────────────────────────────────────────── */
 export const galleryCategorySchema = z.enum(["sportraits", "media-days", "senior-portraits"])
 
-export const gallerySpotlightQuoteSchema = z.object({
+export const galleryShootRefSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  category: galleryCategorySchema,
+  cover: z.string(),
+  images: z.array(z.string()),
+  isGrayscale: z.boolean().optional(),
+  objectPosition: z.string().optional(),
+})
+
+export const galleryChapterQuoteSchema = z.object({
+  id: z.string(),
   quote: z.string(),
-  name: z.string(),
-  detail: z.string(),
+  attribution: z.string(),
+  context: z.string(),
 })
 
-export const galleryEndCtaSchema = z.object({
-  headline: z.string(),
-  buttonText: z.string(),
-  buttonHref: z.string(),
+export const galleryChapterSchema = z.object({
+  id: z.string(),
+  eyebrow: z.string(),
+  hero: galleryShootRefSchema,
+  supports: z.array(galleryShootRefSchema).length(2),
+  quote: galleryChapterQuoteSchema,
 })
-
-export const galleryItemSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("shoot"),
-    id: z.string(),
-    col: z.number().int().min(1).max(12),
-    colSpan: z.number().int().min(1).max(12),
-    row: z.number().int().min(1).max(12),
-    rowSpan: z.number().int().min(1).max(12),
-    title: z.string(),
-    category: galleryCategorySchema,
-    cover: z.string(),
-    images: z.array(z.string()),
-    isGrayscale: z.boolean().optional(),
-    speed: z.number().min(0).max(2).optional().default(0.5),
-    /** Optional legacy size for mobile aspect ratio */
-    sizePreset: z.enum(["small", "medium", "large", "hero"]).optional(),
-  }),
-  z.object({
-    type: z.literal("quote"),
-    id: z.string(),
-    col: z.number().int().min(1).max(12),
-    colSpan: z.number().int().min(1).max(12),
-    row: z.number().int().min(1).max(12),
-    rowSpan: z.number().int().min(1).max(12),
-    quote: z.string(),
-    attribution: z.string(),
-    context: z.string(),
-  }),
-])
 
 export const galleryLayoutSchema = z.object({
-  trackWidthVw: z.number().min(100).max(2000).default(600),
-  gridColumns: z.literal(12).default(12),
-  gridRowCount: z.number().int().min(2).max(8).default(3),
-  items: z.array(galleryItemSchema),
-  spotlightQuotes: z.array(gallerySpotlightQuoteSchema),
-  endCta: galleryEndCtaSchema,
-  spotlightEyebrow: z.string().default("What clients say"),
+  chapters: z.array(galleryChapterSchema).min(1),
+  chapterWidthVw: z.number().min(80).max(200).default(120),
 })
 export type GalleryLayout = z.infer<typeof galleryLayoutSchema>
-export type GalleryItem = z.infer<typeof galleryItemSchema>
-export type GallerySpotlightQuote = z.infer<typeof gallerySpotlightQuoteSchema>
+export type GalleryChapter = z.infer<typeof galleryChapterSchema>
+export type GalleryShootRef = z.infer<typeof galleryShootRefSchema>
+export type GalleryChapterQuote = z.infer<typeof galleryChapterQuoteSchema>
 
 /** Content row IDs */
 export const SITE_CONTENT_IDS = [

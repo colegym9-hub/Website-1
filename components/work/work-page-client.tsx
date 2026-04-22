@@ -147,7 +147,7 @@ export default function WorkPageClient({
         </section>
 
         <section className="relative z-10">
-          <CanvasGallery category="all" layout={galleryLayout} />
+          <CanvasGallery layout={galleryLayout} />
         </section>
 
         <div className="relative z-10">
