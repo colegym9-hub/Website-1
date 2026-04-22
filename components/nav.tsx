@@ -59,6 +59,7 @@ export default function Nav({ content }: { content?: GlobalNavContent }) {
             onClick={() => setOpenForPath(open ? null : pathname)}
             aria-label={open ? "Close menu" : "Open menu"}
             className="flex flex-col gap-[5px] p-1 cursor-pointer"
+            suppressHydrationWarning
           >
             <motion.span
               animate={open ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}

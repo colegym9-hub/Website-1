@@ -8,6 +8,7 @@ export const runtime = "nodejs"
 const bodySchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(120),
   email: z.string().trim().email("Enter a valid email").max(200),
+  phone: z.string().trim().max(40).optional().default(""),
   message: z.string().trim().min(1, "Message is required").max(5000),
   service: z.string().trim().max(80).optional().default(""),
 })
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     const issue = parsed.error.issues[0]
     return NextResponse.json({ ok: false, error: issue?.message ?? "Invalid input" }, { status: 400 })
   }
-  const { name, email, message, service } = parsed.data
+  const { name, email, phone, message, service } = parsed.data
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
       <h2 style="margin: 0 0 16px;">New message from the site</h2>
       <p><strong>Name:</strong> ${escapeHtml(name)}</p>
       <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+      <p><strong>Phone:</strong> ${phone ? `<a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a>` : "(not provided)"}</p>
       ${service ? `<p><strong>Service:</strong> ${escapeHtml(service)}</p>` : ""}
       <p><strong>Message:</strong></p>
       <div style="white-space: pre-wrap; padding: 12px 16px; background: #f6f6f6; border-radius: 8px;">${escapeHtml(message)}</div>
@@ -60,6 +62,7 @@ export async function POST(req: NextRequest) {
   const text = [
     `Name: ${name}`,
     `Email: ${email}`,
+    `Phone: ${phone || "(not provided)"}`,
     service ? `Service: ${service}` : null,
     "",
     "Message:",

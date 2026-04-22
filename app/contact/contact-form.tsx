@@ -18,6 +18,7 @@ type Errors = Partial<Record<"name" | "email" | "message", string>>
 export default function ContactForm({ defaultService = "" }: { defaultService?: string }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [message, setMessage] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
@@ -45,6 +46,7 @@ export default function ContactForm({ defaultService = "" }: { defaultService?: 
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
+          phone: phone.trim(),
           message: message.trim(),
           service: defaultService,
         }),
@@ -57,6 +59,7 @@ export default function ContactForm({ defaultService = "" }: { defaultService?: 
       toast.success("Message sent. Cole will reach out soon.")
       setName("")
       setEmail("")
+      setPhone("")
       setMessage("")
       setErrors({})
     } catch {
@@ -96,6 +99,20 @@ export default function ContactForm({ defaultService = "" }: { defaultService?: 
             disabled={submitting}
           />
           {errors.email ? <FieldDescription>{errors.email}</FieldDescription> : null}
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="contact-phone">Phone (optional)</FieldLabel>
+          <Input
+            id="contact-phone"
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={submitting}
+          />
         </Field>
 
         <Field data-invalid={errors.message ? true : undefined}>
